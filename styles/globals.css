@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.body-bg{
+    background: linear-gradient(111.34deg, rgba(0, 102, 179, 0.1) 0%, rgba(91, 196, 191, 0.1) 100%), 
+    url('../public/BackgroundGraphic.png') no-repeat center scroll;
+}
+
+.policyType:checked + label > .policyIcon {
+    color: #5BC4BF;
+   }
