@@ -53,7 +53,7 @@ namespace TravelInsuranceAPI.Utils.JWTMiddleware
                 }, out SecurityToken validatedToken);
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
-                var userId = jwtToken.Claims.First(x => x.Type == "id").Value;
+                var userId = jwtToken.Claims.First(x => x.Type == "phone").Value;
 
                 // attach user to context on successful jwt validation
                 //if(userId.Equals(id))
