@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using static TravelInsuranceAPI.Models.EmployeeClass;
-using TravelInsuranceAPI.Services.Repositories;
-using TravelInsuranceAPI.Services.IRepositories;
+using TravelInsuranceAPI.Models;
+using TravelInsuranceAPI.Services.IRepository;
 using log4net.Core;
 
 
@@ -116,6 +116,7 @@ namespace TravelInsuranceAPI.Controllers
 
         [HttpPost("StoreWhatsAppInfo")]
         [ProducesResponseType(typeof(APIResponse), (int)HttpStatusCode.OK)]
+        [AuthorizeToken]
         public async Task<ActionResult<APIResponse>> CreateUserDetails([FromBody] WhatsAppInfo Info)
         {
             try

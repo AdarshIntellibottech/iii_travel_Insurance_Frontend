@@ -15,6 +15,7 @@ D:\Travel Insurance\source-code\Backend\TravelInsuranceBackend\PracticeApi\Pract
 D:\Travel Insurance\source-code\Backend\TravelInsuranceBackend\PracticeApi\PracticeApi\PracticeApi\bin\Debug\net6.0\MessagePack.Annotations.dll
 D:\Travel Insurance\source-code\Backend\TravelInsuranceBackend\PracticeApi\PracticeApi\PracticeApi\bin\Debug\net6.0\System.Net.Http.Formatting.dll
 D:\Travel Insurance\source-code\Backend\TravelInsuranceBackend\PracticeApi\PracticeApi\PracticeApi\bin\Debug\net6.0\System.Web.Http.dll
+D:\Travel Insurance\source-code\Backend\TravelInsuranceBackend\PracticeApi\PracticeApi\PracticeApi\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 D:\Travel Insurance\source-code\Backend\TravelInsuranceBackend\PracticeApi\PracticeApi\PracticeApi\bin\Debug\net6.0\Microsoft.AspNetCore.Razor.Language.dll
 D:\Travel Insurance\source-code\Backend\TravelInsuranceBackend\PracticeApi\PracticeApi\PracticeApi\bin\Debug\net6.0\Microsoft.Bcl.AsyncInterfaces.dll
 D:\Travel Insurance\source-code\Backend\TravelInsuranceBackend\PracticeApi\PracticeApi\PracticeApi\bin\Debug\net6.0\Microsoft.Build.dll

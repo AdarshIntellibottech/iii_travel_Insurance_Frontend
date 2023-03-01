@@ -1,6 +1,6 @@
 ﻿namespace TravelInsuranceAPI.Controllers
 {
-    public class APIResponse
+    public class TokenAPIResponse
     {
         public bool isSuccess { get; set; }
         public string ErrorMessage { get; set; }

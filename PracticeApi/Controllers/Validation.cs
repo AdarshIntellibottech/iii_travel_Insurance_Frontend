@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using static TravelInsuranceAPI.Models.EmployeeClass;
-using TravelInsuranceAPI.Services.Repositories;
-using TravelInsuranceAPI.Services.IRepositories;
+using TravelInsuranceAPI.Services.Repository;
+using TravelInsuranceAPI.Services.IRepository;
 using log4net.Core;
 using System.ComponentModel.DataAnnotations;
 

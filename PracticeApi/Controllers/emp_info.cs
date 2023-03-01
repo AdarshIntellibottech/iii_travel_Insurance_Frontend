@@ -1,6 +1,6 @@
 ﻿using Microsoft.Build.Framework;
 
-namespace TravelInsuranceAPI.Services.IRepositories
+namespace TravelInsuranceAPI.Services.IRepository
 {
     public class emp_info
     {
@@ -11,10 +11,10 @@ namespace TravelInsuranceAPI.Services.IRepositories
         public string dob { get; set; }
         public string doj { get; set; }
         
-        internal List<emp_info> ToList()
-        {
-            throw new NotImplementedException();
-        }
+        //internal List<emp_info> ToList()
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }
 

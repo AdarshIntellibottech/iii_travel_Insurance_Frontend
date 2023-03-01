@@ -4,8 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TravelInsuranceAPI.Controllers;
 
-namespace TravelInsuranceAPI.Services.IRepositories
+
+namespace TravelInsuranceAPI.Services.IRepository
 {
     public interface ITravelRepository
     {
@@ -20,3 +22,5 @@ namespace TravelInsuranceAPI.Services.IRepositories
 
     }
 }
+
+

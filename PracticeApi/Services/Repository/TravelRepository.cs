@@ -4,7 +4,7 @@ using MySql.Data.MySqlClient;
 using MySqlX.XDevAPI.Common;
 using Org.BouncyCastle.Asn1.X509;
 using TravelInsuranceAPI.Controllers;
-using TravelInsuranceAPI.Services.IRepositories;
+using TravelInsuranceAPI.Services.IRepository;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
@@ -19,9 +19,11 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using MessagePack.Formatters;
+using System.ComponentModel;
 //using Validation = PracticeApi.Controllers.Validation;
 
-namespace TravelInsuranceAPI.Services.Repositories
+namespace TravelInsuranceAPI.Services.Repository
 
 {
     public class TravelRepository : ITravelRepository
@@ -30,7 +32,7 @@ namespace TravelInsuranceAPI.Services.Repositories
 
         //private string path;
         //private static string key = "b14ca5898a4e4142aace2ea2143a2410";
-       
+
 
         public TravelRepository(IConfiguration configuration)
         {
@@ -71,7 +73,7 @@ namespace TravelInsuranceAPI.Services.Repositories
                 (DecryptString(_configuration.GetValue<string>("ConnectionStrings:DefaultConnection")));
 
                 emp_info details = connection.QueryAsync<emp_info>
-                    ("SELECT * FROM emp_info WHERE id = @id", new { id = id }).Result.FirstOrDefault();
+                    ("SELECT * FROM emp_info WHERE id = @id", new { id }).Result.FirstOrDefault();
 
 
                 if (details == null)
@@ -104,7 +106,7 @@ namespace TravelInsuranceAPI.Services.Repositories
         public async Task<APIResponse> CreateEmpDetails(emp_info details)
         {
             APIResponse result = new APIResponse();
-           
+
             try
             {
 
@@ -113,7 +115,7 @@ namespace TravelInsuranceAPI.Services.Repositories
                 (DecryptString(_configuration.GetValue<string>("ConnectionStrings:DefaultConnection")));
                 var dataCount = connection.QueryAsync<int>
                     ("SELECT count(*) FROM emp_info WHERE (id = @id )",
-                    new { id = details.id }).Result;
+                    new { details.id }).Result;
                 if (Convert.ToInt32(dataCount.FirstOrDefault()) > 0)
                 {
                     var affected =
@@ -140,22 +142,22 @@ namespace TravelInsuranceAPI.Services.Repositories
                 }
                 else
                 {
-                    
-                
-                    
-                    
-
-                var affected =
-                    await connection.ExecuteAsync
-                        ("INSERT INTO emp_info (id,name,address,department,dob,doj) " +
-                        "VALUES ( @id, @name,@address,@department,@dob,@doj)",
-                                new { emp_info = details.id, id = details.id, name = details.name, address = details.address, department = details.department, dob = details.dob, doj = details.doj });
 
 
 
-                 
 
-                    
+
+                    var affected =
+                        await connection.ExecuteAsync
+                            ("INSERT INTO emp_info (id,name,address,department,dob,doj) " +
+                            "VALUES ( @id, @name,@address,@department,@dob,@doj)",
+                                    new { emp_info = details.id, details.id, details.name, details.address, details.department, details.dob, details.doj });
+
+
+
+
+
+
 
 
                     if (affected == 0)
@@ -178,7 +180,7 @@ namespace TravelInsuranceAPI.Services.Repositories
 
                 }
 
-                
+
 
 
 
@@ -194,7 +196,7 @@ namespace TravelInsuranceAPI.Services.Repositories
             }
 
         }
-       
+
 
         public async Task<APIResponse> UpdateEmpDetails(emp_info details)
         {
@@ -206,7 +208,7 @@ namespace TravelInsuranceAPI.Services.Repositories
 
                 var affected = await connection.ExecuteAsync
                         ("UPDATE emp_info SET id=@id,name=@name,address=@address,department=@department WHERE id=@id",
-                                 new { id = details.id, name = details.name, address = details.address, department = details.department });
+                                 new { details.id, details.name, details.address, details.department });
 
 
                 if (affected == 0)
@@ -242,7 +244,7 @@ namespace TravelInsuranceAPI.Services.Repositories
                 (DecryptString(_configuration.GetValue<string>("ConnectionStrings:DefaultConnection")));
 
                 var affected = await connection.ExecuteAsync("DELETE FROM emp_info WHERE id = @id",
-                    new { id = id });
+                    new { id });
 
                 if (affected == 0)
                 {
@@ -294,7 +296,7 @@ namespace TravelInsuranceAPI.Services.Repositories
                     Result.statuscode = "200";
                     Result.result = details.ToList();
                     return result;
-                    
+
                 }
 
             }
@@ -339,16 +341,16 @@ namespace TravelInsuranceAPI.Services.Repositories
                 "VALUES (@policy_id, @customer_name, @phone_number, @payment_status, @whatsapp_notify_by_user, @whatsapp_sent_status, @policy_purchase_date, @travel_start_date, @access_token, @grand_code)",
                 new
                 {
-                    policy_id = details.policy_id,
-                    customer_name = details.customer_name,
-                    phone_number = details.phone_number,
-                    payment_status = details.payment_status,
-                    whatsapp_notify_by_user = details.whatsapp_notify_by_user,
-                    whatsapp_sent_status = details.whatsapp_sent_status,
-                    policy_purchase_date = details.policy_purchase_date,
-                    travel_start_date = details.travel_start_date,
-                    access_token = details.access_token,
-                    grand_code = details.grand_code
+                    details.policy_id,
+                    details.customer_name,
+                    details.phone_number,
+                    details.payment_status,
+                    details.whatsapp_notify_by_user,
+                    details.whatsapp_sent_status,
+                    details.policy_purchase_date,
+                    details.travel_start_date,
+                    details.access_token,
+                    details.grand_code
 
                 });
 
@@ -365,18 +367,24 @@ namespace TravelInsuranceAPI.Services.Repositories
                     //result.isSuccess = true;
                     //result.statuscode = "200";
                     //result.result = true;
-                
+
                     result.savedToDb = "Data saved successfully";
 
                     //--------------Call InsureMOApi-----------------
-                    string[] responseOne = await CallInsureMoApi(newDetails);
-                    Console.WriteLine("Array is not empty");
-                    if(responseOne.Length !=0)
+                    string[] insuremoresponse = await CallInsureMoApi(newDetails);
+                    Console.WriteLine("array is not empty");
+                    if (insuremoresponse.Length != 0)
                     {
                         Console.WriteLine("array is present");
+                        //------------call whatsapp cloud api ----------
+                        bool wacloudapiresponse = await CallWaCloudApi(newDetails, insuremoresponse);
                     }
-                    
-
+                    else
+                    {
+                        result.isSuccess = false;
+                        result.statuscode = "200";
+                        result.result = false;
+                    }
 
 
                     return result;
@@ -390,11 +398,6 @@ namespace TravelInsuranceAPI.Services.Repositories
             }
         }
 
-        //public bool CallInsureMoApi(WhatsAppInfo details)
-        //{
-        //    Console.WriteLine("hi");
-        //    return true;
-        //}
         public static async Task<string[]> CallInsureMoApi(WhatsAppInfo details)
         {
             var policyId = details.policy_id;
@@ -402,8 +405,8 @@ namespace TravelInsuranceAPI.Services.Repositories
 
             var requestBody = new
             {
-                policyId = policyId,
-                prdtCode = prdtCode
+                policyId,
+                prdtCode
             };
 
             var httpClient = new HttpClient();
@@ -417,13 +420,14 @@ namespace TravelInsuranceAPI.Services.Repositories
 
             var response = await httpClient.PostAsync("https://sandbox.gw.sg.ebaocloud.com/ddpc/1.0.0/api/pub/std/policy/printFiles", requestContent);
 
-            
+
             var responseContent = await response.Content.ReadAsStringAsync();
 
             var responseObject = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(responseContent);
+
             var links = new List<string>();
 
-            if(responseObject.data != null)
+            if (responseObject.data != null)
             {
                 foreach (var dataItem in responseObject.data)
                 {
@@ -437,10 +441,77 @@ namespace TravelInsuranceAPI.Services.Repositories
             }
             else
             {
-                return links.ToArray() ;
+                return links.ToArray();
             }
-            
-           
+
+
+        }
+
+        public static async Task<bool> CallWaCloudApi(WhatsAppInfo details, string[] insureMoResponse)
+        {
+            string[] document = { "PolicySchedule", "DebitNote", "PolicyWording", "TaxInvoice" };
+            var waToken = "EAAS7sCkNG2QBAGSwA6UqqFAi4PexDEhiQyX3g3a9btpAVV89z4tnPJx5IMCD5XGk1izu48IvH7JiZCzHLgewNoEZASqiDJSOqXGpvNPGQLrcRs3XgLpSmImaNZAbLGKiSUsFbsVPHlCJ3ReWOSRrOde55olonlhufg9LiUBQ3Y2SeKIc20C";
+            for (int index = 0; index < insureMoResponse.Length; index++)
+            {
+                var requestBody = new
+                {
+                    messaging_product = "whatsapp",
+                    to = details.phone_number,
+                    type = "template",
+                    template = new
+                    {
+                        name = "send_quotation",
+                        language = new
+                        {
+                            code = "en"
+                        },
+                        components = new dynamic[]
+                     {
+                        new
+                        {
+                            type = "header",
+                            parameters = new dynamic[]
+                            {
+                                new
+                                {
+                                    type = "document",
+                                    document = new
+                                    {
+                                        link = insureMoResponse[index],
+                                        filename = document[index]
+                                    }
+                                }
+                            }
+                        }
+                     }
+                    }
+                };
+
+                var httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", waToken);
+                var requestContent = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(requestBody));
+                requestContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                var response = await httpClient.PostAsync("https://graph.facebook.com/v15.0/107611225534603/messages", requestContent);
+                var statusNumber = (int)response.StatusCode;
+                if (statusNumber == 200)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    var responseObject = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(responseContent);
+                    Console.WriteLine(responseObject);
+
+                    var obj = responseObject.messages["id"];
+                    Console.WriteLine(responseObject);
+                }
+
+
+
+
+
+
+            }
+            return true;
+
         }
     }
 }
